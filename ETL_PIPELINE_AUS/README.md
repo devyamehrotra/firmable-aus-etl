@@ -470,17 +470,14 @@ curl -H "Authorization: Bearer $OPENAI_API_KEY" https://api.openai.com/v1/models
 
 ### Performance Issues
 
-#### Memory Problems
-- Reduce batch size in processing scripts
-- Monitor memory usage with `htop` or `docker stats`
-- Consider using Spark for very large datasets
+
 
 #### Slow Matching
 - Enable blocking strategy in entity matching
 - Use parallel processing with ThreadPoolExecutor
 - Optimize database indexes
 
-## 🤝 Contributing
+
 
 ### Development Workflow
 
