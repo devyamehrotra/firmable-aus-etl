@@ -1,0 +1,1 @@
+select * from raw_data.abr_companies

@@ -1,0 +1,24 @@
+# name: firmable_dbt
+# version: '1.0'
+# profile: firmable_dbt
+
+
+# firmable_dbt:
+#   target: dev
+#   outputs:
+#     dev:
+#       type: postgres
+#       host: localhost
+#       user: newuser
+#       password: newpassword
+#       port: 5432
+#       dbname: newdb
+#       schema: raw_data
+
+name: firmable_dbt
+version: '1.0'
+profile: firmable_dbt
+
+model-paths: ["models"]
+target-path: "target"
+clean-targets: ["target", "dbt_modules"]

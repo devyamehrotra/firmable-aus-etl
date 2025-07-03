@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: abr_companies_quality
+    description: "ABR companies table with data quality tests"
+    columns:
+      - name: abn
+        tests:
+          - unique
+          - not_null
+      - name: entity_name
+        tests:
+          - not_null
+      

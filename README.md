@@ -292,10 +292,26 @@ Respond with JSON:
    psql -U postgres -d newdb -f ETL_PIPELINE_AUS/sql/schema_postgres.sql
    ```
 
-4. **Set environment variables**
+4. **Set up environment variables**
    ```bash
-   export OPENAI_API_KEY="your_openai_api_key"
-   export DB_PASSWORD="your_postgres_password"
+   # Copy the example environment file
+   cp env.example .env
+   
+   # Edit .env file with your actual credentials
+   nano .env
+   ```
+   
+   **Required environment variables:**
+   ```bash
+   # Database Configuration
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_NAME=newdb
+   DB_USER=newuser
+   DB_PASSWORD=your_actual_password
+   
+   # OpenAI Configuration (for LLM features)
+   OPENAI_API_KEY=your_openai_api_key_here
    ```
 
 ### Running the Pipeline
@@ -370,9 +386,28 @@ dbt test
 
 ### Database Configuration
 
-Update database connection in scripts:
+The project now uses environment variables for database configuration. Create a `.env` file in the project root:
+
+```bash
+# Copy the example file
+cp env.example .env
+
+# Edit with your actual credentials
+nano .env
+```
+
+**Example .env file:**
+```bash
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=newdb
+DB_USER=newuser
+DB_PASSWORD=your_actual_password
+```
+
+**Database URI format:**
 ```python
-DB_URI = "postgresql+psycopg2://postgres:your_password@localhost:5432/new_db"
+DB_URI = "postgresql+psycopg2://newuser:your_password@localhost:5432/newdb"
 ```
 
 ### Airflow Configuration

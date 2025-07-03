@@ -112,11 +112,28 @@ logs/
 *.sqlite
 *.sqlite3
 
-# Data files (uncomment if you don't want to track data)
-# *.csv
-# *.json
-# *.parquet
-# *.zip
+# Data files - Exclude all data files to keep repository size small
+*.csv
+*.json
+*.parquet
+*.zip
+*.xml
+*.xlsx
+*.xls
+
+# ETL Pipeline specific data directories
+ETL_PIPELINE_AUS/data/
+ETL_PIPELINE_AUS/scripts/data/
+**/raw/
+**/cleaned/
+**/processed/
+**/entity_matching/
+
+# Large files
+*.zip
+*.tar.gz
+*.rar
+*.7z
 
 # Airflow
 airflow.cfg
@@ -130,4 +147,29 @@ logs/
 
 # Temporary files
 *.tmp
-*.temp 
+*.temp
+
+# Additional data and cache files
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+*.feather
+*.arrow
+*.orc
+*.avro
+*.msgpack
+*.joblib
+
+# Model files and checkpoints
+*.pth
+*.pt
+*.ckpt
+*.h5
+*.pb
+*.onnx
+*.tflite
+
+# Sample data files (keep small examples if needed)
+# !sample_data/*.csv
+# !example_data/*.json 
