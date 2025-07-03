@@ -1,56 +1,51 @@
 # Firmable Australia ETL Pipeline
 
-A comprehensive data pipeline for extracting, transforming, and integrating Australian company data from Common Crawl and the Australian Business Register (ABR). This solution demonstrates advanced entity matching using NLP, fuzzy logic, and LLM technologies.
+A comprehensive data pipeline for extracting, transforming, and integrating Australian company data from Common Crawl and the Australian Business Register (ABR). This solution demonstrates advanced entity matching using NLP, fuzzy logic, and LLM technologies with production-ready orchestration using Apache Airflow.
 
-## 🎯 Project Goals
+## 🎯 Project Overview
 
-- **Data Integration**: Extract, clean, and integrate large-scale company data from public sources
-- **Advanced Matching**: Implement multi-stage entity matching using traditional and AI-powered methods
-- **Data Quality**: Ensure high-quality, reliable data through comprehensive testing and validation
-- **Scalability**: Design for handling 100k+ records with efficient processing
-- **Production Ready**: Implement robust monitoring, logging, and error handling
+This ETL pipeline processes large-scale Australian business data through a multi-stage approach:
+- **Extraction**: Downloads and parses ABR XML data and Common Crawl datasets
+- **Transformation**: Cleans, normalizes, and standardizes company information
+- **Loading**: Efficiently loads data into PostgreSQL with optimized indexing
+- **Matching**: Performs entity matching using multiple algorithms (Fuzzy, TF-IDF, LLM)
+- **Quality Assurance**: Implements comprehensive data quality testing with dbt
 
 ## 🏗️ Architecture
 
 ```mermaid
 flowchart TD
     subgraph "Data Sources"
-        DS1[ABR XML Data]
-        DS2[Common Crawl Data]
+        DS1[ABR XML Data<br/>Australian Business Register]
+        DS2[Common Crawl Data<br/>Web Crawled Companies]
     end
     
     subgraph "Extraction Layer"
-        E1[ABR Extractor]
-        E2[Common Crawl Extractor]
+        E1[ABR XML Extractor<br/>extract_abr_xml.py]
+        E2[Common Crawl Extractor<br/>extract_common_crawl.py]
     end
     
     subgraph "Processing Layer"
-        P1[Data Cleaning]
-        P2[Deduplication]
-        P3[Normalization]
+        P1[Data Cleaning<br/>clean_abr.py & clean_common_crawl.py]
+        P2[Schema Creation<br/>createschema.py]
+        P3[Data Loading<br/>loadingcsv_topostgre_fast.py]
     end
     
     subgraph "Storage Layer"
-        S1[PostgreSQL Raw Data]
-        S2[Processed Data]
+        S1[PostgreSQL Raw Data<br/>raw_data schema]
+        S2[Processed Data<br/>processed_data schema]
     end
     
     subgraph "Matching Engine"
-        M1[Exact Matching]
-        M2[Fuzzy/NLP Matching]
-        M3[LLM Matching]
-    end
-    
-    subgraph "Quality & Analytics"
-        Q1[dbt Models]
-        Q2[Data Quality Tests]
-        Q3[Analytics Dashboard]
+        M1[Fuzzy Matching<br/>rapidfuzz]
+        M2[TF-IDF Matching<br/>scikit-learn]
+        M3[LLM Matching<br/>OpenAI GPT]
     end
     
     subgraph "Orchestration"
-        O1[Airflow DAGs]
-        O2[Monitoring]
-        O3[Logging]
+        O1[Apache Airflow<br/>etl_pipeline.py DAG]
+        O2[dbt Models<br/>firmable_dbt/]
+        O3[Performance Monitoring<br/>logs/]
     end
     
     DS1 --> E1
@@ -64,15 +59,64 @@ flowchart TD
     M1 --> M2
     M2 --> M3
     M3 --> S2
-    S2 --> Q1
-    Q1 --> Q2
-    Q2 --> Q3
     O1 --> E1
     O1 --> E2
     O1 --> P1
-    O1 --> M1
-    O2 --> Q2
-    O3 --> Q3
+    O1 --> P2
+    O1 --> P3
+    O2 --> S2
+    O3 --> O1
+```
+
+## 📁 Project Structure
+
+```
+FirmableProjectsAustrlia/
+├── ETL_PIPELINE_AUS/                    # Main ETL pipeline directory
+│   ├── scripts/                         # Core ETL scripts
+│   │   ├── extraction/                  # Data extraction modules
+│   │   │   ├── extract_abr_xml.py      # ABR XML parser
+│   │   │   └── extract_common_crawl.py # Common Crawl extractor
+│   │   ├── cleaning/                    # Data cleaning and normalization
+│   │   │   ├── clean_abr.py            # ABR data cleaner
+│   │   │   └── clean_common_crawl.py   # Common Crawl cleaner
+│   │   ├── loading/                     # Database loading scripts
+│   │   │   ├── loadingcsv_topostgre_fast.py      # Fast CSV loader
+│   │   │   └── loadingcsv_topostgre_optimized.py # Optimized loader
+│   │   ├── matching/                    # Entity matching algorithms
+│   │   │   ├── entity_matching.py      # Basic fuzzy matching
+│   │   │   ├── entity_matching_tfidf.py # TF-IDF matching
+│   │   │   ├── entity_matching_spark.py # Spark-based matching
+│   │   │   └── entity_matching_optimized.py # Optimized matching
+│   │   ├── tests/                       # Unit and integration tests
+│   │   │   └── test_etl_pipeline.py    # Pipeline tests
+│   │   ├── utils/                       # Utility functions
+│   │   └── createschema.py              # Database schema creation
+│   ├── data/                            # Data files and directories
+│   │   ├── abr/                         # ABR data
+│   │   │   ├── raw/                     # Raw XML and CSV files
+│   │   │   └── cleaned/                 # Cleaned data files
+│   │   ├── common_crawl/                # Common Crawl data
+│   │   │   ├── raw/                     # Raw crawl data
+│   │   │   └── cleaned/                 # Cleaned crawl data
+│   │   └── entity_matching/             # Entity matching results
+│   ├── sql/                             # Database schema and DDL
+│   │   └── schema_postgres.sql          # PostgreSQL schema
+│   ├── firmable_dbt/                    # dbt models and tests
+│   │   ├── models/                      # dbt transformation models
+│   │   └── dbt_project.yml              # dbt project configuration
+│   ├── logs/                            # Pipeline execution logs
+│   ├── docs/                            # Documentation
+│   ├── tests/                           # Additional tests
+│   ├── requirements.txt                 # Python dependencies
+│   └── README.md                        # Detailed documentation
+├── dags/                                # Airflow DAGs
+│   └── etl_pipeline.py                  # Main ETL pipeline DAG
+├── LLM/                                 # LLM integration
+│   └── llm_entity_matching_demo.py      # LLM matching demonstration
+├── main.py                              # Entry point script
+├── .gitignore                           # Git ignore rules
+└── README.md                            # This file
 ```
 
 ## 🗄️ Database Schema
@@ -140,35 +184,28 @@ CREATE TABLE processed_data.entity_matches (
 );
 ```
 
-### Analytics Schema (`analytics`)
-
-```sql
--- Data quality metrics
-CREATE TABLE analytics.data_quality_metrics (
-    id SERIAL PRIMARY KEY,
-    pipeline_run_id VARCHAR(50),
-    metric_name VARCHAR(100),
-    metric_value DECIMAL(10,2),
-    threshold_value DECIMAL(10,2),
-    status VARCHAR(20),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
 ## 🤖 Entity Matching Strategy
 
 ### Multi-Stage Matching Approach
 
 1. **Exact Match**: ABN or website URL exact matches
 2. **Fuzzy Match**: Company names with >85% similarity using rapidfuzz
-3. **NLP Match**: Natural language processing for semantic similarity
+3. **TF-IDF Match**: Natural language processing for semantic similarity
 4. **LLM-Enhanced Match**: OpenAI GPT for complex business logic and reasoning
+
+### Available Matching Algorithms
+
+- **`entity_matching.py`**: Basic fuzzy matching with nested loops
+- **`entity_matching_tfidf.py`**: TF-IDF vectorization with cosine similarity
+- **`entity_matching_spark.py`**: Spark-based distributed matching
+- **`entity_matching_optimized.py`**: Optimized matching with blocking and parallel processing
 
 ### LLM Integration
 
-#### OpenAI GPT-4 Implementation
+The pipeline includes LLM-based entity matching using OpenAI GPT:
 
 ```python
+# Example LLM matching prompt
 COMPANY_MATCHING_PROMPT = """
 You are an expert in Australian business entity matching. 
 Given two company records, determine if they represent the same business entity.
@@ -200,51 +237,6 @@ Respond with JSON:
 """
 ```
 
-### Performance Optimization
-
-- **Batch Processing**: Group similar queries to optimize API costs
-- **Parallel Processing**: Use ThreadPoolExecutor for concurrent matching
-- **Blocking Strategy**: Block by first two letters of company names for efficiency
-- **Caching**: Store LLM results to avoid repeated calls
-- **Database Indexing**: Optimized indexes for fast lookups
-
-## 📊 Data Quality & Monitoring
-
-### Quality Metrics
-
-- **Completeness**: Percentage of required fields populated
-- **Accuracy**: Entity matching confidence scores
-- **Consistency**: Data format compliance and standardization
-- **Timeliness**: Pipeline execution time and data freshness
-
-### dbt Data Quality Tests
-
-```yaml
-version: 2
-
-models:
-  - name: abr_companies_quality
-    description: "ABR companies table with data quality tests"
-    columns:
-      - name: abn
-        tests:
-          - unique
-          - not_null
-      - name: entity_name
-        tests:
-          - not_null
-      - name: postcode
-        tests:
-          - not_null
-```
-
-### Monitoring Dashboard
-
-Access monitoring tools:
-- **Airflow UI**: http://localhost:8080
-- **dbt Docs**: http://localhost:8081
-- **Database Metrics**: Custom PostgreSQL monitoring
-
 ## 🛠️ Technology Stack
 
 ### Core Technologies
@@ -255,11 +247,12 @@ Access monitoring tools:
 - **dbt**: Data transformation and quality testing
 - **SQLAlchemy**: Database ORM and connection management
 
-### Data Processing
+### Data Processing Libraries
 
 - **pandas**: Data manipulation and analysis
 - **rapidfuzz**: Fast fuzzy string matching
-- **OpenAI GPT-4**: Advanced entity matching and reasoning
+- **scikit-learn**: TF-IDF vectorization and similarity
+- **OpenAI GPT**: Advanced entity matching and reasoning
 - **psycopg2**: PostgreSQL adapter
 
 ### Development & Testing
@@ -267,49 +260,6 @@ Access monitoring tools:
 - **pytest**: Unit and integration testing
 - **pytest-mock**: Mocking for isolated testing
 - **Git**: Version control and collaboration
-
-## 📁 Project Structure
-
-```
-FirmableProjectsAustrlia/
-├── ETL_PIPELINE_AUS/
-│   ├── scripts/
-│   │   ├── extraction/          # Data extraction modules
-│   │   │   ├── extract_abr_xml.py
-│   │   │   └── extract_common_crawl.py
-│   │   ├── cleaning/            # Data cleaning and normalization
-│   │   │   ├── clean_abr.py
-│   │   │   └── clean_common_crawl.py
-│   │   ├── loading/             # Database loading scripts
-│   │   │   └── loadingcsv_topostgre_fast.py
-│   │   ├── matching/            # Entity matching algorithms
-│   │   │   ├── entity_matching.py
-│   │   │   ├── entity_matching_tfidf.py
-│   │   │   └── entity_matching_spark.py
-│   │   ├── tests/               # Unit and integration tests
-│   │   │   └── test_etl_pipeline.py
-│   │   └── utils/               # Utility functions
-│   ├── data/                    # Data files and directories
-│   │   ├── abr/
-│   │   │   ├── raw/
-│   │   │   └── cleaned/
-│   │   ├── common_crawl/
-│   │   │   ├── raw/
-│   │   │   └── cleaned/
-│   │   └── entity_matching/
-│   ├── sql/                     # Database schema and DDL
-│   │   └── schema_postgres.sql
-│   ├── logs/                    # Pipeline execution logs
-│   └── requirements.txt         # Python dependencies
-├── dags/                        # Airflow DAGs
-│   └── etl_pipeline.py
-├── firmable_dbt/                # dbt models and tests
-│   ├── models/
-│   └── dbt_project.yml
-├── llm_entity_matching_demo.py  # LLM demonstration script
-├── .gitignore                   # Git ignore rules
-└── README.md                    # Project documentation
-```
 
 ## 🚀 Quick Start
 
@@ -362,14 +312,40 @@ FirmableProjectsAustrlia/
 
 3. **Run data quality tests**
    ```bash
-   cd firmable_dbt
+   cd ETL_PIPELINE_AUS/firmable_dbt
    dbt test
    ```
 
 4. **Test LLM entity matching**
    ```bash
-   python llm_entity_matching_demo.py
+   python ETL_PIPELINE_AUS/LLM/llm_entity_matching_demo.py
    ```
+
+## 📊 Performance Optimizations
+
+### Optimized Components
+
+1. **Entity Matching**: 
+   - Blocking strategy reduces O(n²) to O(n log n)
+   - Parallel processing with ThreadPoolExecutor
+   - Memory-efficient batch processing
+
+2. **Data Loading**:
+   - Connection pooling with SQLAlchemy
+   - Fast COPY method for small files
+   - Parallel batch loading for large files
+   - Automatic index creation
+
+3. **XML Processing**:
+   - Streaming XML parsing
+   - Memory-efficient processing
+   - Error handling and recovery
+
+### Performance Monitoring
+
+- **Logging**: Comprehensive logging in `ETL_PIPELINE_AUS/logs/`
+- **Metrics**: Processing time and throughput tracking
+- **Error Handling**: Graceful failure recovery
 
 ## 🧪 Testing
 
@@ -386,7 +362,7 @@ python -c "from sqlalchemy import create_engine; engine = create_engine('postgre
 
 ### Data Quality Tests
 ```bash
-cd firmable_dbt
+cd ETL_PIPELINE_AUS/firmable_dbt
 dbt test
 ```
 
@@ -409,7 +385,7 @@ airflow variables set OPENAI_API_KEY your_api_key
 
 ### dbt Configuration
 
-Update `firmable_dbt/profiles.yml`:
+Update `ETL_PIPELINE_AUS/firmable_dbt/profiles.yml`:
 ```yaml
 firmable_dbt:
   target: dev
@@ -522,11 +498,12 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 🏆 Key Features
 
 - ✅ **Multi-source data extraction** (ABR + Common Crawl)
-- ✅ **Advanced entity matching** (Fuzzy + NLP + LLM)
+- ✅ **Advanced entity matching** (Fuzzy + TF-IDF + LLM)
 - ✅ **Data quality assurance** (dbt + comprehensive testing)
 - ✅ **Production-ready orchestration** (Airflow + monitoring)
 - ✅ **Scalable architecture** (PostgreSQL + optimized processing)
 - ✅ **LLM integration** (OpenAI GPT for intelligent matching)
+- ✅ **Performance optimizations** (Blocking, parallel processing, connection pooling)
 
 ## 🎯 Use Cases
 
