@@ -424,25 +424,6 @@ firmable_dbt:
       schema: raw_data
 ```
 
-## 📈 Performance Tuning
-
-### For Large Datasets (>100k records)
-
-1. **Increase batch size**: Set `BATCH_SIZE=5000` in environment
-2. **Enable parallel processing**: Use ThreadPoolExecutor for matching
-3. **Database optimization**: Add indexes and partitions
-4. **Memory management**: Monitor and adjust Python memory limits
-
-### Production Recommendations
-
-1. **Resource limits**: Set Docker memory/CPU limits
-2. **Monitoring**: Enable comprehensive logging and alerting
-3. **Backup**: Set up automated database backups
-4. **Security**: Use secrets management for API keys
-
-## 🔍 Troubleshooting
-
-### Common Issues
 
 #### Database Connection Errors
 ```bash
