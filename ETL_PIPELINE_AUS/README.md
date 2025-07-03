@@ -4,11 +4,11 @@ A comprehensive data pipeline for extracting, transforming, and integrating Aust
 
 ## 🎯 Project Goals
 
-- **Data Integration**: Extract, clean, and integrate large-scale company data from public sources
-- **Advanced Matching**: Implement multi-stage entity matching using traditional and AI-powered methods
-- **Data Quality**: Ensure high-quality, reliable data through comprehensive testing and validation
-- **Scalability**: Design for handling 100k+ records with efficient processing
-- **Production Ready**: Implement robust monitoring, logging, and error handling
+- **Data Integration**: Extract, clean, and integrate Australian company data from public sources
+- **Entity Matching**: Implement entity matching using fuzzy logic, TF-IDF, and LLM methods
+- **Data Quality**: Ensure data quality through dbt models and testing
+- **Workflow Orchestration**: Use Apache Airflow for pipeline management
+- **Security**: Implement environment-based configuration for secure credential management
 
 ## 🏗️ Architecture
 
@@ -510,23 +510,18 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - **Issues**: Create GitHub issues for bugs or feature requests
 - **Email**: Contact devyamehrotra123@gmail.com for urgent issues
 
-### Community
 
-- **GitHub Discussions**: Use GitHub Discussions for questions
-- **Contributing**: See CONTRIBUTING.md for guidelines
 
----
-
-**Made with ❤️ for the Australian business community**
 
 ## 🏆 Key Features
 
 - ✅ **Multi-source data extraction** (ABR + Common Crawl)
-- ✅ **Advanced entity matching** (Fuzzy + NLP + LLM)
-- ✅ **Data quality assurance** (dbt + comprehensive testing)
-- ✅ **Production-ready orchestration** (Airflow + monitoring)
-- ✅ **Scalable architecture** (PostgreSQL + optimized processing)
-- ✅ **LLM integration** (OpenAI GPT for intelligent matching)
+- ✅ **Entity matching** (Fuzzy + TF-IDF + LLM)
+- ✅ **Data quality assurance** (dbt models and tests)
+- ✅ **Workflow orchestration** (Apache Airflow)
+- ✅ **Database integration** (PostgreSQL with optimized loading)
+- ✅ **LLM integration** (OpenAI GPT for advanced matching)
+- ✅ **Environment-based configuration** (Secure credential management)
 
 ## 🎯 Use Cases
 
